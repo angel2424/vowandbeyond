@@ -1,0 +1,94 @@
+---
+interface Props {
+  /** ISO string for the target date (e.g. 2027-09-16T00:00:00). */
+  targetDate?: string
+}
+
+const { targetDate = '2027-09-20T17:00:00' } = Astro.props
+---
+
+<section class="bg-brand-100 mx-auto w-full px-6 py-28">
+  <div class="max-w-8xl mx-auto">
+    <h2 class="font-body! text-brand-800 mb-8 text-center text-2xl font-black! uppercase">
+      16 de Septiembre 2027
+    </h2>
+    <div
+      class="text-primary grid grid-cols-2 gap-4 p-6 text-center backdrop-blur-sm md:grid-cols-4"
+      id="countdown"
+      data-date=`${targetDate}`
+    >
+      <div class="flex flex-col items-center gap-2 p-4">
+        <span data-countdown="days" class="text-5xl font-semibold">--</span>
+        <span class="text-brand-800 text-sm tracking-[0.25em] uppercase">Días</span>
+      </div>
+      <div class="flex flex-col items-center gap-2 p-4">
+        <span data-countdown="hours" class="text-5xl font-semibold">--</span>
+        <span class="text-brand-800 text-sm tracking-[0.25em] uppercase">Horas</span>
+      </div>
+      <div class="flex flex-col items-center gap-2 p-4">
+        <span data-countdown="minutes" class="text-5xl font-semibold">--</span>
+        <span class="text-brand-800 text-sm tracking-[0.25em] uppercase">Minutos</span>
+      </div>
+      <div class="flex flex-col items-center gap-2 p-4">
+        <span data-countdown="seconds" class="text-5xl font-semibold">--</span>
+        <span class="text-brand-800 text-sm tracking-[0.25em] uppercase">Segundos</span>
+      </div>
+    </div>
+    <h4 class="text-brand-950 mt-2 text-center text-xl">¡Marca tu calendario!</h4>
+  </div>
+</section>
+
+<script>
+  const countdown = document.getElementById('countdown')
+  const target = new Date(String(countdown?.dataset.date))
+
+  const refs = {
+    days: document.querySelector('[data-countdown="days"]') as HTMLSpanElement,
+    hours: document.querySelector('[data-countdown="hours"]') as HTMLSpanElement,
+    minutes: document.querySelector('[data-countdown="minutes"]') as HTMLSpanElement,
+    seconds: document.querySelector('[data-countdown="seconds"]') as HTMLSpanElement,
+  }
+
+  const pad = (value: number) => String(value).padStart(2, '0')
+
+  const setValues = ({
+    days,
+    hours,
+    minutes,
+    seconds,
+  }: {
+    days: string
+    hours: number
+    minutes: number
+    seconds: number
+  }) => {
+    refs.days.textContent = days
+    refs.hours.textContent = pad(hours)
+    refs.minutes.textContent = pad(minutes)
+    refs.seconds.textContent = pad(seconds)
+  }
+
+  const update = () => {
+    const now = new Date()
+    const diff = target.getTime() - now.getTime()
+
+    if (diff <= 0) {
+      setValues({ days: '00', hours: 0, minutes: 0, seconds: 0 })
+      clearInterval(timer)
+      return
+    }
+
+    const totalSeconds = Math.floor(diff / 1000)
+    const days = Math.floor(totalSeconds / 86400)
+    const hours = Math.floor((totalSeconds % 86400) / 3600)
+    const minutes = Math.floor((totalSeconds % 3600) / 60)
+    const seconds = totalSeconds % 60
+
+    setValues({ days: String(days).padStart(2, '0'), hours, minutes, seconds })
+  }
+
+  update()
+  const timer = setInterval(update, 1000)
+
+  addEventListener('astro:before-swap', () => clearInterval(timer))
+</script>

@@ -1,0 +1,24 @@
+---
+interface Props {
+  label: string
+  light?: boolean
+  href?: string
+  className?: string
+}
+
+const { label, light, href, className } = Astro.props
+
+const colorClasses = {
+  light: 'text-white border-primary hover:text-brand-300',
+  dark: 'text-primary border-primary hover:text-brand-600',
+} as const
+
+const resolvedColorClass = light ? colorClasses.light : colorClasses.dark
+---
+
+<a
+  {href}
+  class={`${className} border-2 uppercase hover:scale-[1.02] transition-[scale,color] ease-linear duration-150 cursor-pointer text-base px-10 py-2 ${resolvedColorClass}`}
+>
+  {label}
+</a>

@@ -1,0 +1,49 @@
+---
+import Button from './ui/Button.astro'
+---
+
+<header
+  class="text-brand-50 absolute z-9999 w-full transition-[background-color] duration-200 ease-linear"
+>
+  <div
+    class="max-w-8xl mobile-nav mx-auto flex w-full items-center justify-end px-8 py-11 transition-[padding] duration-200 ease-linear lg:hidden"
+  >
+    <button class="menu">
+      <svg viewBox="0 0 64 48">
+        <path d="M19,15 L45,15 C70,15 58,-2 49.0177126,7 L19,37"></path>
+        <path d="M19,24 L45,24 C61.2371586,24 57,49 41,33 L32,24"></path>
+        <path d="M45,33 L19,33 C-8,33 6,-2 22,14 L45,37"></path>
+      </svg>
+    </button>
+  </div>
+  <div
+    class="max-w-8xl nav mx-auto hidden w-full items-center justify-between px-8 py-11 transition-[padding] duration-200 ease-linear lg:flex"
+  >
+    <nav class="flex items-center gap-5 text-lg">
+      <a href="#" class="hover:text-brand-300 transition-[color] duration-200 ease-linear"
+        >Nuestra historia</a
+      >
+      <a href="#" class="hover:text-brand-300 transition-[color] duration-200 ease-linear"
+        >Ubicación</a
+      >
+      <a href="#" class="hover:text-brand-300 transition-[color] duration-200 ease-linear"
+        >Galería</a
+      >
+      <a href="#" class="hover:text-brand-300 transition-[color] duration-200 ease-linear"
+        >Cortejo Nupcial</a
+      >
+      <a href="#" class="hover:text-brand-300 transition-[color] duration-200 ease-linear"
+        >Registro</a
+      >
+    </nav>
+    <Button light label="Confirmar asistencia" />
+  </div>
+</header>
+
+<script>
+  document.querySelectorAll('.menu').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      btn.classList.toggle('active')
+    })
+  })
+</script>
