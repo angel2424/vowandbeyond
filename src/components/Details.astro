@@ -1,0 +1,26 @@
+---
+import Button from './ui/Button.astro'
+import LocationButton from './ui/LocationButton.astro'
+---
+
+<section class="mx-auto flex max-w-3xl flex-col gap-20 px-8 py-24 text-center">
+  <h2 class="text-brand-950 text-4xl font-medium">Esperamos que nos puedas acompañar</h2>
+  <div class="flex flex-col items-center justify-between gap-12 md:flex-row">
+    <div class="flex flex-col items-center gap-3">
+      <h4 class="text-primary text-3xl">Ceremonia</h4>
+      <p class="text-brand-950 text-2xl font-medium">6:00pm</p>
+    </div>
+    <div class="flex flex-col items-center gap-3">
+      <h4 class="text-primary text-3xl">Recepción</h4>
+      <p class="text-brand-950 text-2xl font-medium">8:00pm</p>
+    </div>
+  </div>
+  <div class="flex flex-col items-center gap-12">
+    <p class="text-lg text-gray-500">
+      Juarez 100 cruz con Callejón de los Blanco y frente a la escuela, Los Rodríguez, 67300
+      Santiago, N.L.
+    </p>
+    <LocationButton href="#" label="Ver ubicación" />
+    <Button href="#" label="Confirma tu asistencia" />
+  </div>
+</section>

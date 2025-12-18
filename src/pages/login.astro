@@ -1,0 +1,91 @@
+---
+import '../styles/global.css'
+
+const error = Astro.url.searchParams.get('error')
+let message = ''
+if (error === 'invalid') message = 'Credenciales inválidas.'
+if (error === 'server') message = 'Error del servidor. Intenta de nuevo.'
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=IBM+Plex+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Login | Vow And Beyond</title>
+  </head>
+  <body>
+    <main
+      class="mx-auto flex min-h-screen max-w-xl flex-col items-center justify-center px-6 py-28"
+    >
+      <img
+        src="https://storage.googleapis.com/vowandbeyond/alora-logo.svg"
+        class="mb-20 aspect-video h-auto w-20 object-contain"
+        alt="Logo de Alora | Panel de confirmación de invitados"
+      />
+      <div class="mb-12 text-center">
+        <h1 class="text-brand-500 text-2xl font-semibold">¡Hola, Emily & John!</h1>
+        <p class="mt-4 text-base text-gray-500">
+          Aquí podrán ver a sus invitados que ya confirmaron su asistencia. Ingresen sus
+          credenciales para acceder.
+        </p>
+      </div>
+      <p class="text-red-600">{message}</p>
+      <form class="w-full space-y-10" method="POST" action="/api/login">
+        <div class="flex flex-col gap-8">
+          <div class="group relative z-0 mb-5 w-full">
+            <input
+              type="email"
+              name="email"
+              id="email"
+              class="focus:border-brand peer focus:border-b-primary block w-full appearance-none border-0 border-b-2 border-b-gray-400 bg-transparent px-0 py-2.5 text-sm focus:ring-0 focus:outline-none"
+              placeholder=" "
+              autocomplete="name"
+              required
+            />
+            <label
+              for="email"
+              class="peer-focus:text-brand-950 absolute top-1 -z-10 origin-left -translate-y-6 scale-75 transform text-base text-gray-600 duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:start-0 peer-focus:-translate-y-6 peer-focus:scale-85 rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4"
+              >Correo electrónico</label
+            >
+          </div>
+          <div class="group relative z-0 mb-5 w-full">
+            <input
+              type="password"
+              name="password"
+              id="password"
+              class="focus:border-brand peer focus:border-b-primary block w-full appearance-none border-0 border-b-2 border-b-gray-400 bg-transparent px-0 py-2.5 text-sm focus:ring-0 focus:outline-none"
+              placeholder=" "
+              required
+            />
+            <label
+              for="password"
+              class="peer-focus:text-brand-950 absolute top-1 -z-10 origin-left -translate-y-6 scale-75 transform text-base text-gray-600 duration-300 peer-placeholder-shown:translate-y-0 peer-placeholder-shown:scale-100 peer-focus:start-0 peer-focus:-translate-y-6 peer-focus:scale-85 rtl:peer-focus:left-auto rtl:peer-focus:translate-x-1/4"
+              >Contraseña</label
+            >
+          </div>
+        </div>
+        <div class="flex justify-center">
+          <button
+            type="submit"
+            class={`mt-2 border-2 uppercase hover:scale-[1.01] transition-[scale,color,border] ease-linear duration-150 cursor-pointer px-10 py-2 btn text-brand-500 border-brand-400 before:bg-brand-50! hover:text-brand-50 disabled:cursor-not-allowed disabled:opacity-70`}
+          >
+            <span>Iniciar sesión</span>
+          </button>
+        </div>
+      </form>
+      <div class="mt-10 flex items-center justify-between">
+        <p class="text-xs text-gray-500">
+          2026 Alora. Una plataforma de DevWorks Studio. Todos los derechos reservados.
+        </p>
+      </div>
+    </main>
+  </body>
+</html>

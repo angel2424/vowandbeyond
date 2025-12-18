@@ -1,0 +1,277 @@
+---
+import '../styles/global.css'
+export const prerender = false
+
+import { getSupabaseAuthedClient } from '../lib/supabase'
+import { CircleCheck, X, Download } from '@lucide/astro'
+
+const access = Astro.cookies.get('sb-access-token')?.value
+if (!access) return Astro.redirect('/login')
+
+const supabase = getSupabaseAuthedClient(access)
+
+const {
+  data: { user },
+  error: userErr,
+} = await supabase.auth.getUser()
+if (userErr || !user) return Astro.redirect('/login')
+
+const { data: rsvps, error } = await supabase
+  .from('rsvps')
+  .select('*')
+  .order('created_at', { ascending: false })
+---
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=IBM+Plex+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap"
+      rel="stylesheet"
+    />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Admin | Vow and Beyond</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"
+    ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  </head>
+  <body>
+    <main class="mx-auto flex min-h-screen max-w-4xl flex-col justify-between px-8 py-20">
+      <div class="mb-12 flex items-center justify-between">
+        <h1 class="text-brand-600 text-xl font-medium">Boda de Emily & John</h1>
+        <form method="POST" action="/api/logout">
+          <button
+            type="submit"
+            class={`border-2 uppercase hover:scale-[1.01] transition-[scale,color,border] ease-linear duration-150 cursor-pointer px-10 py-2 btn text-brand-500 border-brand-400 before:bg-brand-50! hover:text-brand-50 disabled:cursor-not-allowed disabled:opacity-70`}
+          >
+            <span>Cerrar sesión</span>
+          </button>
+        </form>
+      </div>
+      {error && <p>{error.message}</p>}
+      <div>
+        <div class="mb-10 flex items-center justify-between">
+          <h2 class="text-brand-900 text-2xl font-semibold">Invitados confirmados</h2>
+          <div class="flex gap-3">
+            <button
+              id="downloadPdf"
+              class="btn text-brand-500 border-brand-400 before:bg-brand-50! hover:text-brand-50 flex cursor-pointer items-center gap-2 border-2 px-6 py-2 uppercase transition-[scale,color,border] duration-150 ease-linear hover:scale-[1.01]"
+            >
+              <span>PDF</span>
+            </button>
+            <button
+              id="downloadExcel"
+              class="btn text-brand-500 border-brand-400 before:bg-brand-50! hover:text-brand-50 flex cursor-pointer items-center gap-2 border-2 px-6 py-2 uppercase transition-[scale,color,border] duration-150 ease-linear hover:scale-[1.01]"
+            >
+              <span>Excel</span>
+            </button>
+          </div>
+        </div>
+        <div
+          class="bg-neutral-primary-soft rounded-base border-brand-200 relative overflow-x-auto border shadow-xs"
+        >
+          <table class="text-body w-full text-left text-sm rtl:text-right" id="rsvpTable">
+            <thead
+              class="text-brand-600 bg-brand-50 rounded-base border-brand-200! border-b text-sm"
+            >
+              <tr>
+                <th scope="col" class="px-6 py-3 font-medium">Nombre completo</th>
+                <th scope="col" class="px-6 py-3 font-medium"># de invitados</th>
+                <th scope="col" class="px-6 py-3 font-medium">Teléfono</th>
+                <th scope="col" class="px-6 py-3 font-medium">Nota</th>
+                <th scope="col" class="px-6 py-3 font-medium">Confirmado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                rsvps?.map((rsvp) => {
+                  return (
+                    <tr
+                      class="bg-neutral-primary border-default border-b"
+                      data-attending={rsvp?.attending}
+                    >
+                      <th scope="row" class="text-heading px-6 py-4 font-medium whitespace-nowrap">
+                        {rsvp?.full_name}
+                      </th>
+                      <td class="px-6 py-4">{rsvp?.guests_count}</td>
+                      <td class="px-6 py-4">{rsvp?.phone}</td>
+                      <td class="px-6 py-4">{rsvp?.notes || '-'}</td>
+                      <td class="px-6 py-4">
+                        {rsvp?.attending ? <CircleCheck class="text-brand-600" /> : <X />}
+                      </td>
+                    </tr>
+                  )
+                })
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="mt-10 flex items-center justify-between">
+        <img
+          src="https://storage.googleapis.com/vowandbeyond/alora-logo.svg"
+          class="aspect-video h-auto w-20 object-contain"
+          alt="Logo de Alora | Panel de confirmación de invitados"
+        />
+        <p class="text-xs text-gray-500">
+          2026 Alora. Una plataforma de DevWorks Studio. Todos los derechos reservados.
+        </p>
+      </div>
+    </main>
+
+    <script is:inline>
+      // Wait for all scripts to load
+      window.addEventListener('load', () => {
+        const rsvpData = []
+        const rows = document.querySelectorAll('#rsvpTable tbody tr')
+
+        rows.forEach((row) => {
+          const cells = row.querySelectorAll('th, td')
+          const attending = row.getAttribute('data-attending') === 'true'
+
+          rsvpData.push({
+            nombre: cells[0]?.textContent?.trim() || '',
+            invitados: cells[1]?.textContent?.trim() || '',
+            telefono: cells[2]?.textContent?.trim() || '',
+            nota: cells[3]?.textContent?.trim() || '',
+            confirmado: attending ? 'Sí' : 'No',
+          })
+        })
+
+        // PDF Download
+        document.getElementById('downloadPdf')?.addEventListener('click', () => {
+          try {
+            const { jsPDF } = window.jspdf
+            const doc = new jsPDF()
+
+            // Add title
+            doc.setFontSize(18)
+            doc.text('Lista de Invitados - Boda Emily & John', 14, 20)
+
+            // Add date
+            doc.setFontSize(10)
+            doc.text(`Generado: ${new Date().toLocaleDateString('es-MX')}`, 14, 28)
+
+            // Manual table creation (without autoTable)
+            let y = 40
+            const lineHeight = 7
+            const colWidths = [60, 25, 35, 50, 25]
+            const startX = 14
+
+            // Draw header
+            doc.setFillColor(248, 241, 235)
+            doc.rect(startX, y - 5, 195 - startX, lineHeight, 'F')
+            doc.setFontSize(10)
+            doc.setTextColor(139, 92, 68)
+            doc.setFont(undefined, 'bold')
+
+            doc.text('Nombre', startX + 2, y)
+            doc.text('Invitados', startX + colWidths[0] + 2, y)
+            doc.text('Teléfono', startX + colWidths[0] + colWidths[1] + 2, y)
+            doc.text('Nota', startX + colWidths[0] + colWidths[1] + colWidths[2] + 2, y)
+            doc.text(
+              'Confirmado',
+              startX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2,
+              y
+            )
+
+            y += lineHeight
+
+            // Draw rows
+            doc.setFont(undefined, 'normal')
+            doc.setTextColor(0, 0, 0)
+            doc.setFontSize(9)
+
+            rsvpData.forEach((row, index) => {
+              if (y > 270) {
+                doc.addPage()
+                y = 20
+              }
+
+              // Alternate row colors
+              if (index % 2 === 0) {
+                doc.setFillColor(250, 250, 250)
+                doc.rect(startX, y - 5, 195 - startX, lineHeight, 'F')
+              }
+
+              // Truncate long text
+              const truncate = (text, maxWidth) => {
+                if (doc.getTextWidth(text) <= maxWidth) return text
+                while (doc.getTextWidth(text + '...') > maxWidth && text.length > 0) {
+                  text = text.slice(0, -1)
+                }
+                return text + '...'
+              }
+
+              doc.text(truncate(row.nombre, colWidths[0] - 4), startX + 2, y)
+              doc.text(row.invitados, startX + colWidths[0] + 2, y)
+              doc.text(
+                truncate(row.telefono, colWidths[2] - 4),
+                startX + colWidths[0] + colWidths[1] + 2,
+                y
+              )
+              doc.text(
+                truncate(row.nota, colWidths[3] - 4),
+                startX + colWidths[0] + colWidths[1] + colWidths[2] + 2,
+                y
+              )
+              doc.text(
+                row.confirmado,
+                startX + colWidths[0] + colWidths[1] + colWidths[2] + colWidths[3] + 2,
+                y
+              )
+
+              y += lineHeight
+            })
+
+            // Add footer
+            const pageCount = doc.internal.getNumberOfPages()
+            for (let i = 1; i <= pageCount; i++) {
+              doc.setPage(i)
+              doc.setFontSize(8)
+              doc.setTextColor(128, 128, 128)
+              doc.text(
+                `Página ${i} de ${pageCount}`,
+                doc.internal.pageSize.getWidth() / 2,
+                doc.internal.pageSize.getHeight() - 10,
+                { align: 'center' }
+              )
+            }
+
+            doc.save('invitados-boda.pdf')
+          } catch (error) {
+            console.error('Error generating PDF:', error)
+            alert('Error al generar el PDF. Por favor intente de nuevo.')
+          }
+        })
+
+        // Excel Download
+        document.getElementById('downloadExcel')?.addEventListener('click', () => {
+          const wb = XLSX.utils.book_new()
+
+          const wsData = [
+            ['Lista de Invitados - Boda Emily & John'],
+            [`Generado: ${new Date().toLocaleDateString('es-MX')}`],
+            [],
+            ['Nombre Completo', '# de Invitados', 'Teléfono', 'Nota', 'Confirmado'],
+            ...rsvpData.map((r) => [r.nombre, r.invitados, r.telefono, r.nota, r.confirmado]),
+          ]
+
+          const ws = XLSX.utils.aoa_to_sheet(wsData)
+
+          // Set column widths
+          ws['!cols'] = [{ wch: 30 }, { wch: 15 }, { wch: 15 }, { wch: 30 }, { wch: 30 }]
+
+          XLSX.utils.book_append_sheet(wb, ws, 'Invitados')
+          XLSX.writeFile(wb, 'invitados-boda.xlsx')
+        })
+      })
+    </script>
+  </body>
+</html>

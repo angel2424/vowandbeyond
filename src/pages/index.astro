@@ -3,6 +3,19 @@ import '../styles/global.css'
 import Hero from '../components/Hero.astro'
 import Header from '../components/Header.astro'
 import Countdown from '../components/Countdown.astro'
+import Details from '../components/Details.astro'
+import History from '../components/History.astro'
+import Location from '../components/Location.astro'
+import Gallery from '../components/Gallery.astro'
+import Events from '../components/Events.astro'
+import Hotels from '../components/Hotels.astro'
+import Recommendations from '../components/Recommendations.astro'
+import Team from '../components/Team.astro'
+import Registry from '../components/Registry.astro'
+import DressCode from '../components/DressCode.astro'
+import Rsvp from '../components/Rsvp.astro'
+import Faq from '../components/Faq.astro'
+import Message from '../components/Message.astro'
 ---
 
 <html lang="en">
@@ -12,7 +25,7 @@ import Countdown from '../components/Countdown.astro'
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Domine:wght@400..700&family=Great+Vibes&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=IBM+Plex+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap"
       rel="stylesheet"
     />
     <meta name="viewport" content="width=device-width" />
@@ -20,8 +33,76 @@ import Countdown from '../components/Countdown.astro'
     <title>Astro</title>
   </head>
   <body>
-    <Header />
-    <Hero />
-    <Countdown />
+    <div id="smooth-wrapper">
+      <div id="smooth-content">
+        <Header />
+        <Hero />
+        <Countdown />
+        <Details />
+        <History />
+        <Location />
+        <Gallery />
+        <Events />
+        <Hotels />
+        <Recommendations />
+        <Team />
+        <Registry />
+        <DressCode />
+        <Rsvp />
+        <Faq />
+        <Message />
+        <section
+          class="mx-auto flex min-h-[60vh] max-w-3xl flex-col items-center justify-center gap-2 px-8 py-28 text-center"
+        >
+          <h6 class="mb-6 text-xl font-normal text-gray-600 uppercase">
+            Ayúdanos a compartir tus fotos de nuestro día especial usando el hashtag:
+          </h6>
+          <p class="text-brand-900 text-5xl font-semibold">
+            <span class="text-primary mr-1">#</span>E&J2027
+          </p>
+        </section>
+      </div>
+    </div>
   </body>
 </html>
+
+<script>
+  import { gsap } from 'gsap'
+  import { ScrollTrigger } from 'gsap/ScrollTrigger'
+  import { ScrollSmoother } from 'gsap/ScrollSmoother'
+  gsap.registerPlugin(ScrollTrigger, ScrollSmoother)
+
+  const smoother = ScrollSmoother.create({
+    smooth: 1,
+    effects: true,
+    smoothTouch: 0.1,
+  })
+
+  const scrollToHash = (hash: string) => {
+    if (!hash || hash === '#') return
+    const target = document.querySelector(hash)
+    if (!target) return
+    if (smoother) {
+      smoother.scrollTo(target, true, 'top top')
+    } else {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+  }
+
+  const handleAnchorClick = (event) => {
+    const anchor = event.currentTarget
+    const hash = anchor.getAttribute('href')
+    if (!hash || !hash.startsWith('#')) return
+    event.preventDefault()
+    scrollToHash(hash)
+    history.pushState(null, '', hash)
+  }
+
+  document.querySelectorAll('a[href^=\"#\"]').forEach((anchor) => {
+    anchor.addEventListener('click', handleAnchorClick)
+  })
+
+  if (window.location.hash) {
+    requestAnimationFrame(() => scrollToHash(window.location.hash))
+  }
+</script>

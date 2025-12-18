@@ -1,0 +1,147 @@
+---
+import { ChevronDown, ChevronUp } from '@lucide/astro'
+
+const faqs = [
+  {
+    question: '¿Dónde será la ceremonia y la recepción?',
+    answer:
+      'Ambas celebraciones se realizarán en Hacienda Aurora. La ceremonia inicia en el jardín principal y la recepción será en el salón colonial del mismo recinto, a unos pasos de distancia.',
+  },
+  {
+    question: '¿Cuál es el código de vestimenta?',
+    answer:
+      'Elegante de día. Piensa en tonos tierra, tejidos ligeros y calzado cómodo para césped. Evita el blanco y los colores de la corte nupcial (beige muy claro y dorado).',
+  },
+  {
+    question: '¿Puedo asistir con niños?',
+    answer:
+      'Queremos que te relajes y disfrutes al máximo, por eso la celebración es solo para adultos. Si necesitas ayuda con niñera, podemos recomendarte opciones cercanas.',
+  },
+  {
+    question: '¿Hay estacionamiento o transporte?',
+    answer:
+      'El lugar cuenta con valet parking incluido. También habrá transporte de cortesía saliendo del Hotel Esencia a las 3:30 p. m. y 4:00 p. m., con regreso cada hora a partir de la medianoche.',
+  },
+  {
+    question: '¿Hasta cuándo puedo confirmar mi asistencia?',
+    answer:
+      'Te pedimos confirmar a más tardar el 20 de julio para reservar tu lugar y menús especiales. Si tienes restricciones alimentarias, indícalo en tu respuesta.',
+  },
+]
+const defaultOpenIndex = 0
+---
+
+<section class="relative overflow-hidden px-6 py-28">
+  <div class="pointer-events-none absolute inset-0 -z-10"></div>
+
+  <div class="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1.1fr,1fr] lg:items-start">
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-col gap-2">
+        <span class="text-primary text-xl font-normal tracking-widest uppercase"
+          >Encuentra la respuesta a cualquier duda que tengas</span
+        >
+        <h4 class="text-brand-950 text-4xl font-medium">Preguntas frecuentes</h4>
+      </div>
+      <div class="mt-16 flex items-center gap-3">
+        <div class="space-y-4">
+          {
+            faqs.map((item, index) => {
+              const panelId = `faq-panel-${index}`
+              const isOpen = index === defaultOpenIndex
+              return (
+                <div
+                  class={`group border-b-brand-400 border-b duration-500`}
+                  data-accordion
+                  data-open={isOpen}
+                >
+                  <button
+                    class="flex w-full cursor-pointer items-start justify-between gap-4 px-6 py-5 text-left"
+                    type="button"
+                    aria-controls={panelId}
+                    aria-expanded={isOpen}
+                  >
+                    <div class="flex flex-1 flex-col gap-1">
+                      <p class="text-brand-950 text-lg leading-7 font-normal">{item.question}</p>
+                      <span class="bg-brand-400 h-[3px] w-10 origin-left scale-x-0 rounded-full transition-transform duration-500 ease-out group-data-[open='true']:scale-x-100" />
+                    </div>
+                    <div
+                      class={`text-brand-800 flex h-11 w-11 items-center justify-center rounded-full transition-colors duration-500`}
+                      aria-hidden="true"
+                      data-accordion-trigger
+                    >
+                      <ChevronDown />
+                    </div>
+                  </button>
+                  <div
+                    id={panelId}
+                    data-panel
+                    class={`overflow-hidden px-6 text-base leading-7 text-gray-600 transition-[height,opacity] duration-500 ease-in-out group-data-[open='true']:pb-6`}
+                    style={`height:${isOpen ? 'auto' : '0px'}; opacity:${isOpen ? '1' : '0'};`}
+                  >
+                    <p>{item.answer}</p>
+                  </div>
+                </div>
+              )
+            })
+          }
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const accordions = Array.from(document.querySelectorAll('[data-accordion]')) as HTMLElement[]
+
+      const setPanelState = (panel: HTMLElement | null, isOpen: boolean) => {
+        if (!panel) return
+        const fullHeight = panel.scrollHeight
+        panel.style.height = isOpen ? `${fullHeight}px` : '0px'
+        panel.style.opacity = isOpen ? '1' : '0'
+      }
+
+      const closeOthers = (current: HTMLElement) => {
+        accordions.forEach((accordion) => {
+          if (accordion === current) return
+          accordion.dataset.open = 'false'
+          const panel = accordion.querySelector('[data-panel]') as HTMLElement | null
+          setPanelState(panel, false)
+          accordion.querySelector('button')?.setAttribute('aria-expanded', 'false')
+        })
+      }
+
+      requestAnimationFrame(() => {
+        accordions.forEach((accordion) => {
+          const panel = accordion.querySelector('[data-panel]') as HTMLElement | null
+          const isOpen = accordion.dataset.open === 'true'
+          setPanelState(panel, isOpen)
+          accordion.querySelector('button')?.setAttribute('aria-expanded', isOpen.toString())
+        })
+      })
+
+      const refreshOpenHeights = () => {
+        accordions.forEach((accordion) => {
+          if (accordion.dataset.open !== 'true') return
+          const panel = accordion.querySelector('[data-panel]') as HTMLElement | null
+          setPanelState(panel, true)
+        })
+      }
+
+      window.addEventListener('resize', () => requestAnimationFrame(refreshOpenHeights))
+
+      accordions.forEach((accordion) => {
+        const trigger = accordion.querySelector('button')
+        const btn = accordion.querySelector('[data-accordion-trigger]') as HTMLElement | null
+        const panel = accordion.querySelector('[data-panel]') as HTMLElement | null
+
+        trigger?.addEventListener('click', () => {
+          const isOpen = accordion.dataset.open === 'true'
+          const nextState = !isOpen
+          accordion.dataset.open = nextState.toString()
+          btn?.classList.toggle('rotate-180', nextState)
+          setPanelState(panel, nextState)
+          trigger.setAttribute('aria-expanded', nextState.toString())
+          closeOthers(accordion)
+        })
+      })
+    </script>
+  </div>
+</section>

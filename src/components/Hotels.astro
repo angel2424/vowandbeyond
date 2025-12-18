@@ -1,0 +1,46 @@
+---
+import LocationButton from './ui/LocationButton.astro'
+---
+
+<section class="mx-auto max-w-6xl px-6 pb-28">
+  <div class="flex flex-col gap-2 text-center md:text-left">
+    <span class="text-primary text-xl font-normal tracking-widest uppercase"
+      >Nuestras recomendaciones</span
+    >
+    <h4 class="text-brand-950 text-4xl font-medium">Hoteles</h4>
+  </div>
+  <div class="mt-20 flex flex-col gap-10 md:flex-row">
+    <div class="flex flex-1 flex-col gap-3">
+      <img
+        src="https://storage.googleapis.com/vowandbeyond/hotels/hotel1.jpg"
+        alt="Hotel 1"
+        class="aspect-video h-auto w-full object-cover"
+      />
+      <div class="mt-8 flex flex-col gap-3 px-3">
+        <h6 class="text-primary text-xl font-semibold">
+          Holiday Inn Express Monterrey Tecnológico
+        </h6>
+        <p class="text-lg font-normal text-gray-600">
+          Ave. Eugenio Garza Sada 3680 sur Colonia, Villa Los Pinos, 64770 Monterrey, N.L.
+        </p>
+        <LocationButton href="#" label="Ver mapa" />
+      </div>
+    </div>
+    <div class="flex flex-1 flex-col gap-3">
+      <img
+        src="https://storage.googleapis.com/vowandbeyond/hotels/hotel2.jpg"
+        alt="Hotel 1"
+        class="aspect-video h-auto w-full object-cover"
+      />
+      <div class="mt-8 flex flex-col gap-3 px-3">
+        <h6 class="text-primary text-xl font-semibold">
+          Holiday Inn Express Monterrey Tecnológico
+        </h6>
+        <p class="text-lg font-normal text-gray-600">
+          Ave. Eugenio Garza Sada 3680 sur Colonia, Villa Los Pinos, 64770 Monterrey, N.L.
+        </p>
+        <LocationButton href="#" label="Ver mapa" />
+      </div>
+    </div>
+  </div>
+</section>

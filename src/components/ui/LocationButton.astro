@@ -1,0 +1,22 @@
+---
+import { MapPin } from '@lucide/astro'
+interface Props {
+  label: string
+  light?: boolean
+  href?: string
+  className?: string
+}
+
+const { label, href } = Astro.props
+---
+
+<a
+  {href}
+  class={`location-btn flex flex-col gap-2 w-fit hover:scale-[1.02] transition-[scale,color] ease-linear duration-150 cursor-pointer py-2`}
+>
+  <div class="flex items-center gap-3 px-2">
+    <MapPin size={'1.15em'} />
+    <p class="text-lg font-normal">{label}</p>
+  </div>
+  <span class="bg-brand-950 block h-0.5 w-full"></span>
+</a>

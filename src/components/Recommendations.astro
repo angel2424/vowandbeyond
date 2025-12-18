@@ -1,0 +1,42 @@
+---
+import LocationButton from './ui/LocationButton.astro'
+---
+
+<section class="mx-auto max-w-6xl px-6 pb-28">
+  <div class="flex flex-col gap-2 text-center md:text-left">
+    <span class="text-primary text-xl font-normal tracking-widest uppercase"
+      >Nuestras recomendaciones para que te diviertas en Monterrey</span
+    >
+    <h4 class="text-brand-950 text-4xl font-medium">Entretenimiento</h4>
+  </div>
+  <div class="mt-20 flex flex-col gap-10 md:flex-row">
+    <div class="flex flex-1 flex-col gap-3">
+      <img
+        src="https://storage.googleapis.com/vowandbeyond/recommendations/park.jpg"
+        alt="Hotel 1"
+        class="aspect-video h-auto w-full object-cover"
+      />
+      <div class="mt-8 flex flex-col gap-3 px-3">
+        <h6 class="text-primary text-xl font-semibold">Paseo de Santa Lucia</h6>
+        <p class="text-lg font-normal text-gray-600">
+          Avenida Fundidora y, Adolfo Prieto s/n, Obrera, 64010 Monterrey, N.L.
+        </p>
+        <LocationButton href="#" label="Ver mapa" />
+      </div>
+    </div>
+    <div class="flex flex-1 flex-col gap-3">
+      <img
+        src="https://storage.googleapis.com/vowandbeyond/recommendations/zoo.jpg"
+        alt="Hotel 1"
+        class="aspect-video h-auto w-full object-cover"
+      />
+      <div class="mt-8 flex flex-col gap-3 px-3">
+        <h6 class="text-primary text-xl font-semibold">Grutas de Garcia</h6>
+        <p class="text-lg font-normal text-gray-600">
+          Carretera a Villa de García S/N, 66030 García, N.L.
+        </p>
+        <LocationButton href="#" label="Ver mapa" />
+      </div>
+    </div>
+  </div>
+</section>
