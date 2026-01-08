@@ -6,15 +6,44 @@ import Button from './ui/Button.astro'
   class="text-brand-50 absolute z-9999 w-full transition-[background-color] duration-200 ease-linear"
 >
   <div
-    class="max-w-8xl mobile-nav mx-auto flex w-full items-center justify-end px-8 py-11 transition-[padding] duration-200 ease-linear lg:hidden"
+    class="max-w-8xl mobile-nav ease-linea relative z-50 mx-auto flex w-full items-center justify-end px-8 py-11 transition-[padding] duration-200 lg:hidden"
   >
-    <button class="menu">
+    <button class="menu" aria-expanded="false" aria-controls="mobile-menu">
       <svg viewBox="0 0 64 48">
         <path d="M19,15 L45,15 C70,15 58,-2 49.0177126,7 L19,37"></path>
         <path d="M19,24 L45,24 C61.2371586,24 57,49 41,33 L32,24"></path>
         <path d="M45,33 L19,33 C-8,33 6,-2 22,14 L45,37"></path>
       </svg>
     </button>
+  </div>
+  <div
+    id="mobile-menu"
+    class="mobile-menu bg-brand-950/90 fixed inset-0 z-10 flex h-screen flex-col items-center justify-center gap-8 px-8 text-center backdrop-blur-md lg:hidden"
+    aria-hidden="true"
+  >
+    <nav class="flex flex-col gap-6 text-2xl">
+      <a
+        href="#historia"
+        class="hover:text-brand-300 text-white transition-[color] duration-200 ease-linear"
+        >Nuestra historia</a
+      >
+      <a
+        href="#ubicacion"
+        class="hover:text-brand-300 text-white transition-[color] duration-200 ease-linear"
+        >Ubicación</a
+      >
+      <a
+        href="#galeria"
+        class="hover:text-brand-300 text-white transition-[color] duration-200 ease-linear"
+        >Galería</a
+      >
+      <a
+        href="#rsvp"
+        class="hover:text-brand-300 text-white transition-[color] duration-200 ease-linear"
+        >Registro</a
+      >
+    </nav>
+    <Button light dense label="Confirmar asistencia" href="#rsvp" />
   </div>
   <div
     class="max-w-8xl nav mx-auto hidden w-full items-center justify-between px-8 py-11 transition-[padding] duration-200 ease-linear lg:flex"
@@ -26,11 +55,11 @@ import Button from './ui/Button.astro'
       <a href="#ubicacion" class="hover:text-brand-300 transition-[color] duration-200 ease-linear"
         >Ubicación</a
       >
+      <a href="#schedule" class="hover:text-brand-300 transition-[color] duration-200 ease-linear"
+        >Agenda</a
+      >
       <a href="#galeria" class="hover:text-brand-300 transition-[color] duration-200 ease-linear"
         >Galería</a
-      >
-      <a href="#cortejo" class="hover:text-brand-300 transition-[color] duration-200 ease-linear"
-        >Cortejo Nupcial</a
       >
       <a href="#registro" class="hover:text-brand-300 transition-[color] duration-200 ease-linear"
         >Registro</a
@@ -41,9 +70,39 @@ import Button from './ui/Button.astro'
 </header>
 
 <script>
-  document.querySelectorAll('.menu').forEach((btn) => {
-    btn.addEventListener('click', (e) => {
-      btn.classList.toggle('active')
-    })
+  const menuBtn = document.querySelector('.menu')
+  const mobileMenu = document.querySelector('#mobile-menu')
+
+  const setMenuOpen = (isOpen: boolean) => {
+    menuBtn?.classList.toggle('active', isOpen)
+    menuBtn?.setAttribute('aria-expanded', String(isOpen))
+    mobileMenu?.classList.toggle('open', isOpen)
+    mobileMenu?.setAttribute('aria-hidden', String(!isOpen))
+    document.body.classList.toggle('overflow-hidden', isOpen)
+  }
+
+  menuBtn?.addEventListener('click', () => {
+    const isOpen = !mobileMenu?.classList.contains('open')
+    setMenuOpen(isOpen)
+  })
+
+  mobileMenu?.querySelectorAll('a').forEach((link) => {
+    link.addEventListener('click', () => setMenuOpen(false))
   })
 </script>
+
+<style>
+  .mobile-menu {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px);
+    transition:
+      opacity 200ms ease,
+      transform 200ms ease;
+  }
+  .mobile-menu.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+</style>
