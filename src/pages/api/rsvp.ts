@@ -11,8 +11,6 @@ export const POST: APIRoute = async ({ request }) => {
     const guestsCount = Number.parseInt(payload.guests_count as string, 10)
     const phone = payload.phone?.toString().trim() || null
     const notes = payload.notes?.toString().trim() || null
-    console.log({ fullName, attending, guestsCount, phone, notes })
-
     if (!fullName) {
       return jsonError('El nombre es obligatorio.', 400)
     }

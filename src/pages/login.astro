@@ -7,7 +7,7 @@ if (error === 'invalid') message = 'Credenciales inválidas.'
 if (error === 'server') message = 'Error del servidor. Intenta de nuevo.'
 ---
 
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -19,14 +19,32 @@ if (error === 'server') message = 'Error del servidor. Intenta de nuevo.'
     />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <title>Login | Vow And Beyond</title>
+    <title>Iniciar sesión | Boda Emily &amp; John</title>
+    <meta
+      name="description"
+      content="Accede al panel privado para gestionar los invitados y confirmaciones de la boda de Emily y John."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Iniciar sesión | Boda Emily & John" />
+    <meta
+      property="og:description"
+      content="Ingresa al panel para revisar y administrar las confirmaciones de los invitados."
+    />
+    <meta property="og:image" content="/favicon.svg" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Iniciar sesión | Boda Emily & John" />
+    <meta
+      name="twitter:description"
+      content="Panel privado para la gestión de invitados de la boda de Emily y John."
+    />
+    <meta name="theme-color" content="#00674f" />
   </head>
   <body>
     <main
       class="mx-auto flex min-h-screen max-w-xl flex-col items-center justify-center px-6 py-28"
     >
       <img
-        src="https://storage.googleapis.com/vowandbeyond/alora-logo.svg"
+        src="https://storage.googleapis.com/joseyrosaura/alora-logo.svg"
         class="mb-20 aspect-video h-auto w-20 object-contain"
         alt="Logo de Alora | Panel de confirmación de invitados"
       />

@@ -5,12 +5,13 @@ interface Props {
   href?: string
   className?: string
   dense?: boolean
+  target?: string
 }
 
-const { label, light, href, className, dense } = Astro.props
+const { label, light, href, className, dense, target } = Astro.props
 
 const colorClasses = {
-  light: 'text-white border-primary hover:text-brand-300',
+  light: 'text-white border-brand-400 hover:text-brand-300',
   dark: 'btn text-brand-500 border-brand-400 hover:text-brand-50',
 } as const
 const denseClasses = {
@@ -24,6 +25,7 @@ const resolvedDenseClass = dense ? denseClasses.dense : denseClasses.default
 
 <a
   {href}
+  {target}
   class={`${className} border-2 uppercase hover:scale-[1.01] transition-[scale,color,border] ease-linear duration-150 cursor-pointer px-10 py-2 ${resolvedColorClass} ${resolvedDenseClass}`}
 >
   <span>

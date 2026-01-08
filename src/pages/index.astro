@@ -30,7 +30,7 @@ import Message from '../components/Message.astro'
     />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
-    <title>Astro</title>
+    <title>Emily &amp; John | Invitación de boda</title>
   </head>
   <body>
     <div id="smooth-wrapper">
@@ -63,6 +63,49 @@ import Message from '../components/Message.astro'
         </section>
       </div>
     </div>
+    <div
+      data-audio-player
+      class="group trans animate-(pulse,none) fixed right-4 bottom-4 z-5000 flex items-center gap-3 rounded-full border border-white/10 bg-emerald-950/90 p-2 text-slate-50 shadow-[0_10px_30px_rgba(0,0,0,0.15)] backdrop-blur max-sm:inset-x-3 max-sm:right-auto max-sm:bottom-3"
+    >
+      <!-- Circle button with progress ring -->
+      <button
+        data-action="toggle"
+        type="button"
+        aria-pressed="false"
+        aria-label="Reproducir música"
+        class="relative grid h-12 w-12 cursor-pointer place-items-center rounded-full border border-white/25 bg-white/10 transition hover:-translate-y-px hover:border-white/40 hover:bg-white/15"
+      >
+        <!-- Progress ring -->
+        <svg
+          class="pointer-events-none absolute inset-0 -rotate-90"
+          viewBox="0 0 48 48"
+          aria-hidden="true"
+        >
+          <circle cx="24" cy="24" r="20" class="fill-none stroke-white/15" stroke-width="3.5"
+          ></circle>
+          <circle
+            data-progress-ring
+            cx="24"
+            cy="24"
+            r="20"
+            class="fill-none stroke-emerald-300"
+            stroke-width="3.5"
+            stroke-linecap="round"></circle>
+        </svg>
+
+        <span class="play text-[14px] leading-none" aria-hidden="true">►</span>
+        <span class="pause hidden text-[14px] leading-none" aria-hidden="true">❚❚</span>
+      </button>
+
+      <div
+        class="pointer-events-none hidden max-w-0 overflow-hidden transition-all duration-200 group-hover:pointer-events-auto group-hover:flex group-hover:max-w-60 group-hover:opacity-100"
+      >
+        <div class="pr-2">
+          <p class="m-0 text-sm leading-tight font-semibold whitespace-nowrap">Lover</p>
+          <p class="m-0 text-xs leading-tight whitespace-nowrap opacity-80">Taylor Swift</p>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
 
@@ -70,26 +113,30 @@ import Message from '../components/Message.astro'
   import { gsap } from 'gsap'
   import { ScrollTrigger } from 'gsap/ScrollTrigger'
   import { ScrollSmoother } from 'gsap/ScrollSmoother'
+  const { Howl, Howler } = require('howler')
   gsap.registerPlugin(ScrollTrigger, ScrollSmoother)
 
-  const smoother = ScrollSmoother.create({
-    smooth: 1,
-    effects: true,
-    smoothTouch: 0.1,
-  })
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  const isTouchDevice = window.matchMedia('(pointer: coarse)').matches
+  let smoother = null
 
-  const scrollToHash = (hash: string) => {
+  if (!prefersReducedMotion && !isTouchDevice) {
+    smoother = ScrollSmoother.create({
+      smooth: 1,
+      effects: true,
+      smoothTouch: false,
+    })
+  }
+
+  const scrollToHash = (hash: any) => {
     if (!hash || hash === '#') return
     const target = document.querySelector(hash)
     if (!target) return
-    if (smoother) {
-      smoother.scrollTo(target, true, 'top top')
-    } else {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
+    if (smoother) smoother.scrollTo(target, true, 'top top')
+    else target.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
-  const handleAnchorClick = (event) => {
+  const handleAnchorClick = (event: any) => {
     const anchor = event.currentTarget
     const hash = anchor.getAttribute('href')
     if (!hash || !hash.startsWith('#')) return
@@ -98,11 +145,122 @@ import Message from '../components/Message.astro'
     history.pushState(null, '', hash)
   }
 
-  document.querySelectorAll('a[href^=\"#\"]').forEach((anchor) => {
-    anchor.addEventListener('click', handleAnchorClick)
+  document
+    .querySelectorAll('a[href^="#"]')
+    .forEach((a) => a.addEventListener('click', handleAnchorClick))
+  if (window.location.hash) requestAnimationFrame(() => scrollToHash(window.location.hash))
+
+  const audioContainer = document.querySelector('[data-audio-player]')
+  const playToggle = audioContainer?.querySelector('[data-action="toggle"]')
+  const ring = audioContainer?.querySelector('[data-progress-ring]') as HTMLElement
+  const playIcon = playToggle?.querySelector('.play')
+  const pauseIcon = playToggle?.querySelector('.pause')
+
+  const trackUrl = '/song.mp3'
+
+  let isPlaying = false
+  let rafId = null as any
+  let autoplayBlocked = false
+
+  const R = 20
+  const CIRC = 2 * Math.PI * R
+
+  const setRingProgress = (p: number) => {
+    if (!ring) return
+    const clamped = Math.min(1, Math.max(0, p))
+    ring.style.strokeDasharray = `${CIRC}`
+    ring.style.strokeDashoffset = `${CIRC * (1 - clamped)}`
+  }
+
+  if (ring) {
+    ring.style.strokeDasharray = `${CIRC}`
+    ring.style.strokeDashoffset = `${CIRC}`
+  }
+
+  const setPlayingUI = (playing: any) => {
+    isPlaying = playing
+    playToggle?.setAttribute('aria-pressed', String(playing))
+    playToggle?.setAttribute('aria-label', playing ? 'Pausar música' : 'Reproducir música')
+
+    // toggle icons
+    playIcon?.classList.toggle('hidden', playing)
+    pauseIcon?.classList.toggle('hidden', !playing)
+
+    // optional: pulse when blocked
+    audioContainer?.classList.toggle('autoplay-blocked', autoplayBlocked && !playing)
+  }
+
+  const cancelLoop = () => {
+    if (rafId != null) cancelAnimationFrame(rafId)
+    rafId = null
+  }
+
+  const sound = new Howl({
+    src: [trackUrl],
+    html5: true,
+    preload: true,
+    volume: 0.75,
+    onplay: () => {
+      autoplayBlocked = false
+      setPlayingUI(true)
+
+      const loopProgress = () => {
+        const duration = sound.duration()
+        const position = sound.seek()
+        if (duration > 0 && typeof position === 'number') {
+          setRingProgress(position / duration)
+        }
+        rafId = requestAnimationFrame(loopProgress)
+      }
+
+      loopProgress()
+    },
+    onpause: () => {
+      setPlayingUI(false)
+      cancelLoop()
+    },
+    onend: () => {
+      setPlayingUI(false)
+      cancelLoop()
+      setRingProgress(0)
+    },
+    onloaderror: (id: any, err: any) => {
+      console.error('Audio load error:', err)
+    },
+    onplayerror: (id: any, err: any) => {
+      // This is typically what you get when autoplay is blocked
+      console.warn('Audio play error (likely autoplay blocked):', err)
+      autoplayBlocked = true
+      setPlayingUI(false)
+    },
   })
 
-  if (window.location.hash) {
-    requestAnimationFrame(() => scrollToHash(window.location.hash))
+  // Button is always the most reliable "gesture"
+  playToggle?.addEventListener('click', () => {
+    if (sound.playing()) sound.pause()
+    else sound.play()
+  })
+
+  // One-time global unlock for iOS/Chrome when autoplay was blocked
+  const unlock = () => {
+    if (!sound.playing()) sound.play()
+    document.removeEventListener('click', unlock, true)
+    document.removeEventListener('touchstart', unlock, true)
+    document.removeEventListener('keydown', unlock, true)
+  }
+
+  document.addEventListener('click', unlock, true)
+  document.addEventListener('touchstart', unlock, true)
+  document.addEventListener('keydown', unlock, true)
+
+  // Attempt autoplay
+  setPlayingUI(false)
+  setRingProgress(0)
+
+  try {
+    sound.play()
+  } catch (e) {
+    autoplayBlocked = true
+    setPlayingUI(false)
   }
 </script>

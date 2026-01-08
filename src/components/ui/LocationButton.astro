@@ -5,12 +5,14 @@ interface Props {
   light?: boolean
   href?: string
   className?: string
+  target?: string
 }
 
-const { label, href } = Astro.props
+const { label, href, target } = Astro.props
 ---
 
 <a
+  {target}
   {href}
   class={`location-btn flex flex-col gap-2 w-fit hover:scale-[1.02] transition-[scale,color] ease-linear duration-150 cursor-pointer py-2`}
 >

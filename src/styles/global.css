@@ -6,24 +6,26 @@
 @theme {
   --font-vibes: 'Great Vibes', sans-serif;
   --font-body: 'IBM Plex Serif', serif;
-  --color-primary: #d4af37;
-  --color-brand-50: #faf9ec;
-  --color-brand-100: #f4f0cd;
-  --color-brand-200: #ebdf9d;
-  --color-brand-300: #dfc865;
-  --color-brand-400: #d4af37;
-  --color-brand-500: #c59b2d;
-  --color-brand-600: #aa7a24;
-  --color-brand-700: #885920;
-  --color-brand-800: #724921;
-  --color-brand-900: #623e21;
-  --color-brand-950: #382010;
+  --color-primary: #b59462;
+  --color-brand-50: #f7f4ef;
+  --color-brand-100: #ece5d5;
+  --color-brand-200: #dacbae;
+  --color-brand-300: #c4ac80;
+  --color-brand-400: #b59462;
+  --color-brand-500: #a37e4f;
+  --color-brand-600: #8c6542;
+  --color-brand-700: #714e37;
+  --color-brand-800: #604233;
+  --color-brand-900: #533a30;
+  --color-brand-950: #2f1f19;
 }
 
 body {
   box-sizing: border-box;
   font-family: var(--font-body);
   font-weight: 400;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
 }
 .max-w-8xl {
   max-width: 95rem;
@@ -160,4 +162,33 @@ body {
 
 .btn:active {
   transform: scale(0.95);
+}
+
+.h-dvh {
+  height: 100vh;
+  height: 100dvh;
+  height: 100svh;
+}
+.h-80dvh {
+  height: 80vh;
+  height: 80dvh;
+  height: 80svh;
+}
+.min-h-60dvh {
+  min-height: 60vh;
+  min-height: 60dvh;
+  min-height: 60svh;
+}
+
+.autoplay-blocked button {
+  animation: pulse 1.4s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(110, 231, 183, 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(110, 231, 183, 0);
+  }
 }
