@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@astrojs/react": "^4.4.2",
-    "@astrojs/vercel": "^9.0.2",
+    "@astrojs/vercel": "^9.0.3",
     "@lucide/astro": "^0.559.0",
     "@sparticuz/chromium-min": "^143.0.4",
     "@supabase/supabase-js": "^2.88.0",
